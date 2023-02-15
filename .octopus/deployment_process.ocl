@@ -13,7 +13,7 @@ step "deploy-trident-web-0-0-0-1-zip-package" {
             Octopus.Action.Script.ScriptBody = <<-EOT
                 $machineName = $OctopusParameters["Octopus.Machine.Name"]
                 
-                Write-Host "Remove $machineName from the Load Balancer."
+                Write-Host "Remove $machineName from the Load Balancer(s)."
                 
                 
                 EOT
