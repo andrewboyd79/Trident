@@ -51,3 +51,9 @@ variable "Project.Database.Name" {
         environment = ["staging", "staging-blue", "staging-green"]
     }
 }
+
+variable "AWS Account" {
+    type = "AmazonWebServicesAccount"
+
+    value "ajb-personal-account-access" {}
+}
