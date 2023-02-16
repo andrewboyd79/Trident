@@ -231,6 +231,7 @@ step "disable-maintenance-mode" {
 
     action {
         action_type = "Octopus.Script"
+        channels = ["release"]
         properties = {
             Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
