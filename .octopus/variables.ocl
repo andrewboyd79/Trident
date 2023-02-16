@@ -8,6 +8,16 @@ variable "Email Subject" {
 
 variable "Project.Database.Report.Path" {
     value "C:\\DatabaseReports\\#{Octopus.Environment.Name}" {}
+
+    value "C:\\DatabaseReports\\Production\\#{Octopus.Environment.Name}" {
+        description = ""
+        environment = ["production-blue", "production-green", "production"]
+    }
+
+    value "C:\\DatabaseReports\\Staging\\#{Octopus.Environment.Name}" {
+        description = ""
+        environment = ["staging-blue", "staging-green", "staging"]
+    }
 }
 
 variable "Project.Connection.String" {
