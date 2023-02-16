@@ -24,7 +24,11 @@ step "run-octopus-deploy-runbook" {
     }
 
     action {
-        notes = "** Runs on Deployment Only **"
+        notes = <<-EOT
+                ** Runs on Deployment Only **
+                
+                
+                EOT
         properties = {
             Octopus.Action.RunOnServer = "true"
             Octopus.Action.Template.Id = "ActionTemplates-3"
