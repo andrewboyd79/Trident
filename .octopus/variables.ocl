@@ -46,7 +46,7 @@ variable "Project.Database.Name" {
         environment = ["dev", "qa"]
     }
 
-    value "Trident_Staging_#{Retail.Tenant.ShortName}" {
+    value "Trident_#{Octopus.Environment.Name}_#{Retail.Tenant.ShortName}" {
         description = ""
         environment = ["staging", "staging-blue", "staging-green"]
     }
