@@ -30,7 +30,6 @@ step "run-octopus-deploy-runbook" {
                 
                 EOT
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Template.Id = "ActionTemplates-3"
             Octopus.Action.Template.Version = "14"
             Run.Runbook.Api.Key = "#{Project.Runbook.Api.Key}"
@@ -62,7 +61,6 @@ step "generate-database-delta-report" {
     action {
         action_type = "Octopus.Script"
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 $packagePath = $OctopusParameters["Octopus.Action.Package[Trident.Database].ExtractedPath"]
                 $connectionString = $OctopusParameters["Project.Connection.String"]
@@ -108,7 +106,6 @@ step "auto-approve-database-delta-script" {
             Databases.AutoApproval.ReportPath = "#{Project.Database.Report.Path}\\UpgradeReport.html"
             Databases.AutoApprove.CommandsIndicatingChange = "#{SQL.Verification.Change.List}"
             Databases.AutoApprove.CommandsRequiringApproval = "#{SQL.Verification.Command.List}"
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Template.Id = "ActionTemplates-41"
             Octopus.Action.Template.Version = "1"
         }
@@ -131,6 +128,7 @@ step "approve-database-delta-script" {
             Octopus.Action.Manual.BlockConcurrentDeployments = "True"
             Octopus.Action.Manual.Instructions = "Please review & approve"
             Octopus.Action.Manual.ResponsibleTeamIds = "dba,global/octopus-managers"
+            Octopus.Action.RunOnServer = "false"
         }
         tenant_tags = ["Branch Type/Pseudo"]
     }
@@ -146,7 +144,6 @@ step "deploy-the-database-changes" {
     action {
         action_type = "Octopus.Script"
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 $packagePath = $OctopusParameters["Octopus.Action.Package[Trident.Database].ExtractedPath"]
                 $connectionString = $OctopusParameters["Project.Connection.String"]
@@ -188,6 +185,7 @@ step "deploy-trident-web-application" {
             Octopus.Action.Package.FeedId = "octopus-server-built-in"
             Octopus.Action.Package.JsonConfigurationVariablesTargets = "appSettings.json"
             Octopus.Action.Package.PackageId = "Trident.Web"
+            Octopus.Action.RunOnServer = "false"
         }
         worker_pool_variable = ""
 
@@ -208,7 +206,6 @@ step "verify-the-application" {
     action {
         action_type = "Octopus.Script"
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 $randomNumber = Get-Random -Minimum 1 -Maximum 100
                 
@@ -226,6 +223,36 @@ step "verify-the-application" {
     }
 }
 
+step "call-the-update-load-balancer-runbook" {
+    name = "Call the update load balancer runbook"
+
+    action {
+        channels = ["release"]
+        properties = {
+            Octopus.Action.Template.Id = "ActionTemplates-3"
+            Octopus.Action.Template.Version = "14"
+            Run.Runbook.Api.Key = "#{Project.Runbook.Api.Key}"
+            Run.Runbook.AutoApproveManualInterventions = "No"
+            Run.Runbook.Base.Url = "#{Octopus.Web.ServerUri}"
+            Run.Runbook.CancelInSeconds = "1800"
+            Run.Runbook.DateTime = "N/A"
+            Run.Runbook.Environment.Name = "#{Octopus.Environment.Name}"
+            Run.Runbook.Machines = "N/A"
+            Run.Runbook.ManualIntervention.EnvironmentToUse = "#{Octopus.Environment.Name}"
+            Run.Runbook.Name = "Update Load Balancer"
+            Run.Runbook.Project.Name = "Trident"
+            Run.Runbook.PromptedVariables = <<-EOT
+                Project.Loadbalancer.Percent::#{Project.Loadbalancer.P ercent}
+                Project.Loadbalancer.WaitInMinutes::#{Project.Loadbala ncer.WaitInMinutes} Project.Loadbalancer.HostToUpdate::#{Project.Tenant.L oadbalancer.HostName}
+                EOT
+            Run.Runbook.Space.Name = "#{Octopus.Space.Name}"
+            Run.Runbook.UsePublishedSnapShot = "True"
+            Run.Runbook.Waitforfinish = "False"
+        }
+        worker_pool = "default-worker-pool-1"
+    }
+}
+
 step "disable-maintenance-mode" {
     name = "Update Load Balancer"
 
@@ -233,7 +260,6 @@ step "disable-maintenance-mode" {
         action_type = "Octopus.Script"
         channels = ["release"]
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 $currentEnvironment = $OctopusParameters["Octopus.Environment.Name"]
                 Write-Highlight "Updating load balancer to point to $currentEnvironment"
@@ -254,6 +280,7 @@ step "send-email-notification-re-deployment" {
             Octopus.Action.Email.Body = "#{Email Body}"
             Octopus.Action.Email.Subject = "#{Email Subject}"
             Octopus.Action.Email.ToTeamIds = "trident-notifications"
+            Octopus.Action.RunOnServer = "false"
         }
     }
 }
@@ -264,7 +291,6 @@ step "send-slack-message-on-deployment-failure" {
 
     action {
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Template.Id = "ActionTemplates-1"
             Octopus.Action.Template.Version = "15"
             ssn_Channel = "octoplus-deploy-messaging"
