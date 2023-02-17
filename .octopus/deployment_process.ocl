@@ -242,8 +242,9 @@ step "call-the-update-load-balancer-runbook" {
             Run.Runbook.Name = "Update Load Balancer"
             Run.Runbook.Project.Name = "Trident"
             Run.Runbook.PromptedVariables = <<-EOT
-                Project.Loadbalancer.Percent::#{Project.Loadbalancer.P ercent}
-                Project.Loadbalancer.WaitInMinutes::#{Project.Loadbala ncer.WaitInMinutes} Project.Loadbalancer.HostToUpdate::#{Project.Tenant.L oadbalancer.HostName}
+                Project.Loadbalancer.Percent::#{Project.Loadbalancer.Percent}
+                Project.Loadbalancer.WaitInMinutes::#{Project.Loadbalancer.WaitInMinutes}
+                Project.Loadbalancer.HostToUpdate::#{Project.Tenant.Loadbalancer.HostName}
                 EOT
             Run.Runbook.Space.Name = "#{Octopus.Space.Name}"
             Run.Runbook.UsePublishedSnapShot = "True"
